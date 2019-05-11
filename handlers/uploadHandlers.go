@@ -38,7 +38,12 @@ func uploadGet(ctx context.Context, dsClient *datastore.Client, c *gin.Context) 
 }
 
 func uploadPost(ctx context.Context, dsClient *datastore.Client, c *gin.Context) {
-	token := utils.RandStringBytesMaskImprSrc(6)
+	randLen, err := strconv.Atoi(os.Getenv("SHORT_URL_SIZE"))
+	if err != nil {
+		randLen = 6
+	}
+
+	token := utils.RandStringBytesMaskImprSrc(randLen)
 
 	bucket := os.Getenv("BUCKET_NAME")
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -32,7 +33,12 @@ func shortenGet(ctx context.Context, dsClient *datastore.Client, c *gin.Context)
 }
 
 func shortenPost(ctx context.Context, dsClient *datastore.Client, c *gin.Context) {
-	token := utils.RandStringBytesMaskImprSrc(6)
+	randLen, err := strconv.Atoi(os.Getenv("SHORT_URL_SIZE"))
+	if err != nil {
+		randLen = 6
+	}
+
+	token := utils.RandStringBytesMaskImprSrc(randLen)
 
 	url := c.GetHeader("X-Forwarded-Proto") + "://" + c.Request.Host + "/s/" + token
 

@@ -21,3 +21,4 @@ env_variables:
   REDIRECT_MAIN: "https://antoniomika.me"
   SESSION_NAME: "MainSession"
   SESSION_SECRET: "SessionSecret"
+  SHORT_URL_SIZE: 3

@@ -9,11 +9,28 @@ import (
 
 	"cloud.google.com/go/datastore"
 	"cloud.google.com/go/storage"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 // AuthMiddleware is the middleware for handling and verifying auth
 func AuthMiddleware(c *gin.Context) {
+	session := sessions.Default(c)
+
+	ctx := context.Background()
+
+	dsClient, err := datastore.NewClient(ctx, os.Getenv("GOOGLE_CLOUD_PROJECT"))
+	if err != nil {
+		ReturnErr(c, err, http.StatusInternalServerError)
+		return
+	}
+
+	loggedIn := false
+	loggedInInterface := session.Get("loggedin")
+	if loggedInInterface != nil {
+		loggedIn = loggedInInterface.(bool)
+	}
+
 	token := c.GetHeader("X-Authorization")
 
 	if len(token) == 0 {
@@ -21,7 +38,22 @@ func AuthMiddleware(c *gin.Context) {
 	}
 
 	if len(token) > 0 {
-		if token != os.Getenv("ADMIN_PASS") {
+		authed := false
+		var users []*UserObject
+
+		_, err := dsClient.GetAll(ctx, datastore.NewQuery("User"), &users)
+		if err != nil {
+			ReturnErr(c, err, 0)
+			return
+		}
+
+		for _, user := range users {
+			if token == user.AuthToken && user.Authorized {
+				authed = true
+			}
+		}
+
+		if !authed {
 			res := make(map[string]interface{})
 			res["status"] = false
 
@@ -31,6 +63,8 @@ func AuthMiddleware(c *gin.Context) {
 		return
 	} else if c.Request.Host == os.Getenv("SECRET_HOSTNAME") {
 		c.Request.Host = os.Getenv("SHARE_HOSTNAME")
+		return
+	} else if loggedIn {
 		return
 	} else {
 		res := make(map[string]interface{})
@@ -48,6 +82,7 @@ func CleanupMiddleware(c *gin.Context) {
 	dsClient, err := datastore.NewClient(ctx, os.Getenv("GOOGLE_CLOUD_PROJECT"))
 	if err != nil {
 		ReturnErr(c, err, http.StatusInternalServerError)
+		return
 	}
 
 	bucket := os.Getenv("BUCKET_NAME")

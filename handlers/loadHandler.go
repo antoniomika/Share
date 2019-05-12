@@ -59,6 +59,7 @@ func LoadData(c *gin.Context) {
 
 		if _, err := dsClient.Put(ctx, key, newLink); err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
 
 		c.Redirect(http.StatusFound, link.URL)
@@ -74,6 +75,7 @@ func LoadData(c *gin.Context) {
 
 	if _, err := dsClient.Put(ctx, key, newUpload); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	client, err := storage.NewClient(ctx)

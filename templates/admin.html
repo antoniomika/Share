@@ -49,7 +49,7 @@
             if (url) {
                 console.log(url, type, token);
                 $.ajax({
-                    url: url + '?token=' + token + '&authorization=' + $.urlParam('authorization'),
+                    url: url + '?token=' + token,
                     type: 'DELETE',
                     success: function(result) {
                         window.location.reload();
@@ -63,11 +63,6 @@
         }
 
         $(document).ready(function () {
-            $.urlParam = function (name) {
-                var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.search);
-                return (results !== null) ? results[1] || 0 : false;
-            }
-
             var config = {
                 apiKey: "{{.APIKey}}",
                 authDomain: "{{.AuthDomain}}",
@@ -78,7 +73,7 @@
             };
             firebase.initializeApp(config);
 
-            $.getJSON('/api/upload?authorization=' + $.urlParam('authorization'), function(data) {
+            $.getJSON('/api/upload', function(data) {
                 if (data.uploads) {
                     for (var elem in data.uploads) {
                         var upload = data.uploads[elem];
@@ -107,7 +102,7 @@
                 uploads_table.buttons().container().appendTo('#uploads-table_wrapper .col-sm-6:eq(0)');
             });
 
-            $.getJSON('/api/shorten?authorization=' + $.urlParam('authorization'), function(data) {
+            $.getJSON('/api/shorten', function(data) {
                 if (data.links) {
                     for (var elem in data.links) {
                         var link = data.links[elem];

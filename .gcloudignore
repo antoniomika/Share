@@ -12,6 +12,7 @@
 # below:
 .git
 .gitignore
+Share
 
 # Binaries for programs and plugins
 *.exe

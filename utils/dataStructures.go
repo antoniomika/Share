@@ -8,8 +8,9 @@ import (
 
 // UserObject is the base user
 type UserObject struct {
-	Email    string
-	Password string
+	Email      string
+	AuthToken  string
+	Authorized bool
 }
 
 // FirebaseConfig is the firebase configuration

@@ -6,6 +6,7 @@ handlers:
   secure: always
 
 env_variables:
+  GIN_MODE: debug
   BUCKET_NAME: "storage-bucket"
   FIREBASE_APIKEY: ""
   FIREBASE_AUTHDOMAIN: ""
@@ -13,6 +14,8 @@ env_variables:
   FIREBASE_PROJECTID: ""
   FIREBASE_STORAGEBUCKET: ""
   FIREBASE_MESSAGINGSENDERID: ""
+  CLIENT_ID: ""
+  CLIENT_SECRET: ""
   ADMIN_EMAIL: "s@mik.qa"
   ADMIN_PASS: "AdminPass"
   EDITOR_HOSTNAME: "e.mik.qa"

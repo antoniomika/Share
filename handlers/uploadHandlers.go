@@ -158,6 +158,7 @@ func uploadPost(ctx context.Context, dsClient *datastore.Client, c *gin.Context)
 
 	if _, err := dsClient.Put(ctx, key, uploaded); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	if c.Query("s") != "" {

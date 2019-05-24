@@ -10,7 +10,7 @@ This app uses [Google App Engine](https://cloud.google.com/appengine/) as the un
 2. Login to gcloud
     - `gcloud auth login`
 3. Update your `app.yaml` to reflect your configuration.
-4. Run the gcloud app deploy on the project for Sharer
+4. Run the gcloud app deploy on the project for Share
     - `gcloud app deploy`
     
 ## Usage

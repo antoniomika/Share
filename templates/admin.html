@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Sharer Admin</title>
+    <title>Share Admin</title>
 
     <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase-database.js"></script>
@@ -19,18 +19,22 @@
     <script src="https://cdn.datatables.net/responsive/2.1.1/js/responsive.bootstrap.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.bootstrap.min.js"></script>
-    <script src="//cdn.datatables.net/buttons/1.3.1/js/buttons.flash.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="//rawcdn.githack.com/bpampuch/pdfmake/0.1.27/build/pdfmake.min.js"></script>
-    <script src="//rawcdn.githack.com/bpampuch/pdfmake/0.1.27/build/vfs_fonts.js"></script>
-    <script src="//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
-    <script src="//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"></script>
+    <script src="https://raw.githack.com/layerssss/paste.js/master/paste.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.flash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://rawcdn.githack.com/bpampuch/pdfmake/0.1.27/build/pdfmake.min.js"></script>
+    <script src="https://rawcdn.githack.com/bpampuch/pdfmake/0.1.27/build/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js"></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/darkly/bootstrap.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
           integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/buttons/1.3.1/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/basic.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.css" />
     <script>
         function deleteToken(type, token) {
             var url = '/api/';
@@ -62,7 +66,16 @@
             }
         }
 
+        Dropzone.autoDiscover = false;
         $(document).ready(function () {
+            var myDropzone = new Dropzone('form#file-upload',{
+                paramName: 'uploadfile'
+            });
+
+            myDropzone.on('queuecomplete', function() {
+                window.location.reload();
+            });
+
             var config = {
                 apiKey: "{{.APIKey}}",
                 authDomain: "{{.AuthDomain}}",
@@ -72,6 +85,22 @@
                 messagingSenderId: "{{.MessagingSenderID}}"
             };
             firebase.initializeApp(config);
+
+            $('*').pastableNonInputable();
+            $('*').on('pasteImage', function (ev, data){
+                var splitData = data.dataURL.split(',');
+                var splitBlob = data.blob.type.split('/');
+                
+                $.ajax({
+                    url: '/api/upload/Browser-upload-' + (new Date().toISOString()) + '.' + splitBlob[1],
+                    type: 'PUT',
+                    data: splitData[1],
+                    success: function(data) {
+                        prompt("The link to the available upload is:", data.url);
+                        window.location.reload();
+                    }
+                });
+            });
 
             $.getJSON('/api/upload', function(data) {
                 if (data.uploads) {
@@ -168,7 +197,7 @@
             <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse"><span
                     class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span
                     class="icon-bar"></span></button>
-            <a class="navbar-brand" href="/admin">Sharer Admin</a></div>
+            <a class="navbar-brand" href="/admin">Share Admin</a></div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li class="active"><a href="/admin">Admin</a></li>
@@ -181,6 +210,8 @@
 </div>
 <div class="container" style="padding-top: 60px;">
     <div class="row">
+        <form action="/api/upload" class="dropzone" id="file-upload"></form>
+
         <div id="uploads"><h2>Uploads:</h2>
             <table class="table table-responsive table-striped table-bordered dt-responsive nowrap"
                    id="uploads-table" cellspacing="0" width="100%">

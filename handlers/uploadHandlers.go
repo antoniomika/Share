@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -69,7 +72,18 @@ func uploadPost(ctx context.Context, dsClient *datastore.Client, c *gin.Context)
 
 		filename = uploadedFile.Filename
 	} else {
-		uploadFile = c.Request.Body
+		body, err := ioutil.ReadAll(c.Request.Body)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
+		data, err := base64.StdEncoding.DecodeString(string(body))
+		if err == nil {
+			body = data
+		}
+
+		uploadFile = bytes.NewReader(body)
 		filename = c.Param("filename")
 
 		if filename == "" {

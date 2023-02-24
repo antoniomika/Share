@@ -13,7 +13,7 @@ require (
 	github.com/json-iterator/go v1.1.6 // indirect
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/stretchr/testify v1.3.0 // indirect
-	golang.org/x/net v0.0.0-20190503192946-f4e77d36d62c // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
 	google.golang.org/api v0.4.0
 )
